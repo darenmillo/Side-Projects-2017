@@ -13,11 +13,17 @@ public class Efficiency {
    public static int remnantCount = 0;
    public static int vortexCount = 0;
    public static int ballLightningCount = 0;
-   public static int overloadProcCount = 0;
+
+   //Upon testing, overload procs needed to start at 1.
+    // (Did a test with 100% efficiency, was missing 1 overload proc if starting at 0.)
+   public static int overloadProcCount = 1;
+
 
     public static void main(String[] args){
+
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Please locate the combat log.");
+
         int result = fileChooser.showOpenDialog(null);
 
         if (result == JFileChooser.CANCEL_OPTION){
@@ -37,7 +43,13 @@ public class Efficiency {
                 String currentWord = in.next();
                 if(currentWord.equals("type:")){
                    int type = getType(in, currentWord);
+
+                   //If type is 5 (ability) or 3 (add modifier/overload proc) go into the loop.
+
                    if (type == 5 || type == 3){
+
+                       //If the subject of the action block with the type 5 or 3 is Storm Spirit, get the ability.
+
                        if (isStorm(in, currentWord)){
                            getAbility(in, currentWord);
 
@@ -47,14 +59,20 @@ public class Efficiency {
                 }
             }
 
-            double efficiencyScore = ((double) overloadProcCount/((double)(remnantCount +  vortexCount +  ballLightningCount))) * 100;
             int totalCount = remnantCount +  vortexCount +  ballLightningCount;
 
-            System.out.println("Remnant count: " + remnantCount);
-            System.out.println("Vortex count: " + vortexCount);
-            System.out.println("Ball Lightning count: " + ballLightningCount);
-            System.out.println("Overload procs: " + overloadProcCount);
-            System.out.println("You were " + (int) efficiencyScore + "% efficient with your abilities this game.");
+            //Calculate efficiency: Unique Overload Procs divded by Total Abilities used.
+
+            double efficiencyScore = ((double) overloadProcCount/((double)(remnantCount +  vortexCount +
+                    ballLightningCount))) * 100;
+
+//            Testing purposes
+
+//            System.out.println("Remnant count: " + remnantCount);
+//            System.out.println("Vortex count: " + vortexCount);
+//            System.out.println("Ball Lightning count: " + ballLightningCount);
+//            System.out.println("Overload procs: " + overloadProcCount);
+//            System.out.println("You were " + (int) efficiencyScore + "% efficient with your abilities this game.");
 
 
             JOptionPane.showMessageDialog(null, "Remnant count: " + remnantCount + "\n" +
@@ -74,10 +92,27 @@ public class Efficiency {
         }
 
     }
+
+    /**
+     * This method gets the type of action happening in a block of action in the combat log.
+     * @param in - Scanner thats reading the combatlog.
+     * @param s - string from scanner
+     * @return - type 0-9, 5 - abilities 2 - modifieradd (overload proc)
+     */
+
     public static int getType (Scanner in, String s){
         int type = in.nextInt();
         return type;
     }
+
+    /**
+     * This method returns true if the main subject of the action block is storm.
+     * @param in - Scanner reading combat log.
+     * @param s - string from scanner.
+     * @return - true if the main subject (not victim) of the action in the combat log is Storm Spirit.
+     * @return False otherwise.
+     */
+
     public static Boolean isStorm (Scanner in, String s){
         while (in.hasNext()) {
             s = in.next();
@@ -96,6 +131,13 @@ public class Efficiency {
 
 
     }
+
+    /**
+     * This mothed gets what ability was used/proced and adds it to the counter.
+     * @param in - Scanner reading combatlog.
+     * @param s - string from scanner.
+     */
+
     public static void getAbility (Scanner in, String s){
       while (in.hasNext()){
           s = in.next();
